@@ -184,3 +184,7 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
+
+# Ignore image resources
+/resources/**/*.jpg
+*.db
