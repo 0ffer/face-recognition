@@ -39,4 +39,5 @@ COPY src /root/src
 
 WORKDIR /root
 
-CMD FLASK_APP=src flask run
+# CMD uwsgi --http 0.0.0.0:5000 --module src.run:app
+CMD FLASK_APP=src flask run --host=0.0.0.0
