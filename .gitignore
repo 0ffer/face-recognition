@@ -187,4 +187,8 @@ fabric.properties
 
 # Ignore image resources
 /resources/**/*.jpg
+/resources/**/*.jpeg
+/resources/**/*.clf
+
+# Ignore database files
 *.db
