@@ -15,10 +15,11 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = get_database_file()
 
     # Prepare ORM
-    from src import db
     db.init_app(app)
     db.app = app
+    from src.models import User, Photo
     db.create_all(app=app)
+    db.session.commit()
 
     # Prepare recognition context
     from src.recognition import update_context
@@ -34,6 +35,7 @@ def create_app():
     app.register_blueprint(bp)
 
     return app
+
 
 def get_database_file():
     project_dir = os.path.dirname(os.path.abspath(__file__))

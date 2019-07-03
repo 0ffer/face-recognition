@@ -46,7 +46,7 @@ def user_photos(user_id):
     if request.method == 'POST':
         content = request.get_json()
         photo_data = base64.b64decode(content['data'])
-        return jsonify(repo.create_photo(user_id, photo_data))
+        return jsonify(repo.create_photo(user_id, photo_data)), 201
 
 
 @bp.route('/photos/<int:photo_id>', methods = ['DELETE'])
