@@ -47,34 +47,51 @@ def train(users, n_neighbors=None, knn_algo='ball_tree'):
 
 def predict(photo_data, distance_threshold=0.6):
 
-    if not classifier:
-        return None
-
     # Load image file and find face locations
     img = bytes_to_image(photo_data)
-    face_locations = face_recognition.face_locations(img)
+    # Use more fast face locations algorithm.
+    # face_locations = face_recognition.face_locations(img)
+    import cvlib as cv
+    face_locations, confidences = cv.detect_face(img)
 
     # If no faces are found in the image, return an empty result.
     if len(face_locations) == 0:
-        return []
+        return {
+        'total_persons': 0,
+        'unknown_persons_count': 0,
+        'known_persons': []
+    }
 
     # Find encodings for faces in the test iamge
     faces_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations)
 
-    # Use the KNN model to find the best matches for the test face
-    closest_distances = classifier.kneighbors(faces_encodings, n_neighbors=1)
-    are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(face_locations))]
+    if classifier:
+        # Use the KNN model to find the best matches for the test face
+        closest_distances = classifier.kneighbors(faces_encodings, n_neighbors=1)
+        are_matches = [closest_distances[0][i][0] <= distance_threshold for i in range(len(face_locations))]
 
-    # Predict classes and remove classifications that aren't within the threshold
-    persons = [pred if rec else "unknown" for pred, rec in zip(classifier.predict(faces_encodings), are_matches)]
+        # Predict classes and remove classifications that aren't within the threshold
+        persons = [pred if rec else "unknown" for pred, rec in zip(classifier.predict(faces_encodings), are_matches)]
+    else:
+        persons = ['unknown'] * len(face_locations)
 
     return {
+        'total_persons': len(persons),
         'unknown_persons_count': persons.count("unknown"),
         'known_persons': list(filter(lambda x: x != "unknown", persons))
     }
 
 
 def bytes_to_image(photo_data):
+    try:
+        from numpy.core.multiarray import ndarray
+        import pickle
+        deserialized_object = pickle.loads(photo_data)
+        if isinstance(deserialized_object, ndarray):
+            return deserialized_object
+    except:
+        pass
+
     import io
     return face_recognition.load_image_file(io.BytesIO(photo_data))
 
