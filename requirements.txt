@@ -33,7 +33,7 @@ opencv-python==4.1.0.25
 Pillow==6.0.0
 pipreqs==0.4.9
 progressbar==2.5
-protobuf==3.9.0
+protobuf==3.18.3
 python-dateutil==2.8.0
 python-editor==1.0.4
 pytz==2019.1
